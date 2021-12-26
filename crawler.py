@@ -82,10 +82,16 @@ def detail_id(id):
         table: WebElement = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.svc-SectionTitle")))
 
-    data = {}
+    data = {
+        'Title': BeautifulSoup(
+            driver.find_element_by_css_selector(
+                'div.svc-SectionTitle'
+            ).get_attribute('innerHTML'),
+            'html.parser',
+        ).text
+    }
 
-    data['Title'] = BeautifulSoup(
-        driver.find_element_by_css_selector('div.svc-SectionTitle').get_attribute('innerHTML'), 'html.parser').text
+
     data['Discription'] = BeautifulSoup(driver.find_element_by_css_selector('div.gwt-Label').get_attribute('innerHTML'),
                                         'html.parser').text
 
@@ -119,10 +125,8 @@ def detail_id(id):
             productrows = products.find_all('tbody')[1].find_all('tr')
             data_product = []
             for row in productrows:
-                obj = {}
                 td = row.find_all('td')
-                for i in range(len(td)):
-                    obj[proTitles[i]] = td[i].text
+                obj = {proTitles[i]: td[i].text for i in range(len(td))}
                 data_product.append(obj)
             data[BeautifulSoup(ttl[index + 1].get_attribute('innerHTML'), 'html.parser').text] = data_product
 
